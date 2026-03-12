@@ -25,6 +25,21 @@ export async function deleteHeroSlide(id: number) {
   revalidatePath("/");
 }
 
+export async function replaceHeroSlide(id: number, data: {
+  cloudinaryId: string;
+  cloudinaryUrl: string;
+  headline: string;
+  sub: string;
+}) {
+  await db.update(heroSlides).set(data).where(eq(heroSlides.id, id));
+  revalidatePath("/");
+}
+
+export async function updateHeroSlideText(id: number, headline: string, sub: string) {
+  await db.update(heroSlides).set({ headline, sub }).where(eq(heroSlides.id, id));
+  revalidatePath("/");
+}
+
 export async function updateHeroSlideOrder(id: number, sortOrder: number) {
   await db.update(heroSlides).set({ sortOrder }).where(eq(heroSlides.id, id));
   revalidatePath("/");
