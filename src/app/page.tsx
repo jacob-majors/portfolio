@@ -6,29 +6,32 @@ import { LatestPosts } from "@/components/latest-posts";
 import { db } from "@/db";
 import { projects, blogPosts, heroSlides } from "@/db/schema";
 import { eq, desc, asc } from "drizzle-orm";
+import { auth } from "@/auth";
 
 export default async function HomePage() {
-  // Gracefully handle DB not being set up yet
+  const session = await auth();
+  const isAdmin = !!session?.user;
+
   let featuredProjects: typeof projects.$inferSelect[] = [];
   let latestPosts: typeof blogPosts.$inferSelect[] = [];
-  let dbHeroSlides: { cloudinaryUrl: string; headline: string; sub: string }[] = [];
+  let dbHeroSlides: { id: number; cloudinaryUrl: string; headline: string; sub: string }[] = [];
 
   try {
     [featuredProjects, latestPosts, dbHeroSlides] = await Promise.all([
       db.select().from(projects).where(eq(projects.featured, true)).limit(3),
       db.select().from(blogPosts).where(eq(blogPosts.published, true)).orderBy(desc(blogPosts.publishedAt)).limit(3),
-      db.select({ cloudinaryUrl: heroSlides.cloudinaryUrl, headline: heroSlides.headline, sub: heroSlides.sub })
+      db.select({ id: heroSlides.id, cloudinaryUrl: heroSlides.cloudinaryUrl, headline: heroSlides.headline, sub: heroSlides.sub })
         .from(heroSlides).orderBy(asc(heroSlides.sortOrder)),
     ]);
   } catch {
     // DB not yet configured — pages will show empty state
   }
 
-  const heroSlidesData = dbHeroSlides.map((s) => ({ url: s.cloudinaryUrl, headline: s.headline, sub: s.sub }));
+  const heroSlidesData = dbHeroSlides.map((s) => ({ id: s.id, url: s.cloudinaryUrl, headline: s.headline, sub: s.sub }));
 
   return (
     <main>
-      <HeroScroll dbSlides={heroSlidesData} />
+      <HeroScroll dbSlides={heroSlidesData} isAdmin={isAdmin} />
 
       <SectionIntro
         eyebrow="Photography"
