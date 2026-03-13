@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { getSiteContent } from "@/app/actions/site-content";
 import { AboutContent } from "@/components/about-content";
@@ -37,6 +38,29 @@ export default async function AboutPage() {
       <div className="max-w-3xl mx-auto px-6 py-20">
         <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-6">About</p>
         <AboutContent data={data} isAdmin={isAdmin} />
+
+        {/* Social links */}
+        <div className="mt-16 pt-10 border-t border-[#1a1a1a] flex flex-col sm:flex-row gap-4">
+          <Link
+            href="https://www.instagram.com/_jacobmajors_/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 group"
+          >
+            <span className="text-[#c8a96e] text-[9px] tracking-[0.4em] uppercase">Instagram</span>
+            <span className="text-[#555] text-xs group-hover:text-white transition-colors">@_jacobmajors_</span>
+          </Link>
+          <span className="hidden sm:block text-[#1f1f1f]">·</span>
+          <Link
+            href="https://www.instagram.com/jacobmajorsmedia/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 group"
+          >
+            <span className="text-[#c8a96e] text-[9px] tracking-[0.4em] uppercase">Photography</span>
+            <span className="text-[#555] text-xs group-hover:text-white transition-colors">@jacobmajorsmedia</span>
+          </Link>
+        </div>
       </div>
     </main>
   );
