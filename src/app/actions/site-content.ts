@@ -23,11 +23,20 @@ export async function setSiteContent(key: string, value: string) {
   revalidatePath("/gear");
 }
 
-export async function getGearImages(): Promise<Record<string, string>> {
+export async function getGearContent(): Promise<{
+  images: Record<string, string>;
+  links: Record<string, string>;
+}> {
   try {
-    const rows = await db.select().from(siteContent).where(like(siteContent.key, "gear.image.%"));
-    return Object.fromEntries(rows.map((r) => [r.key.replace("gear.image.", ""), r.value]));
+    const rows = await db.select().from(siteContent).where(like(siteContent.key, "gear.%"));
+    const images: Record<string, string> = {};
+    const links: Record<string, string> = {};
+    for (const row of rows) {
+      if (row.key.startsWith("gear.image.")) images[row.key.replace("gear.image.", "")] = row.value;
+      else if (row.key.startsWith("gear.link.")) links[row.key.replace("gear.link.", "")] = row.value;
+    }
+    return { images, links };
   } catch {
-    return {};
+    return { images: {}, links: {} };
   }
 }

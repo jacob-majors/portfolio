@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { getGearImages } from "@/app/actions/site-content";
+import { getGearContent } from "@/app/actions/site-content";
 import { GearGrid } from "@/components/gear-grid";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GearPage() {
-  const [session, imageMap] = await Promise.all([auth(), getGearImages()]);
+  const [session, { images, links }] = await Promise.all([auth(), getGearContent()]);
   const isAdmin = !!session?.user;
 
   return (
@@ -20,7 +20,7 @@ export default async function GearPage() {
         <h1 className="text-5xl md:text-7xl font-light text-white mb-4">Gear</h1>
         <p className="text-[#666] text-lg mb-20">What I actually use and why.</p>
 
-        <GearGrid initialImages={imageMap} isAdmin={isAdmin} />
+        <GearGrid initialImages={images} initialLinks={links} isAdmin={isAdmin} />
       </div>
     </main>
   );
