@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { siteContent } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getSiteContent(key: string): Promise<string | null> {
@@ -20,4 +20,14 @@ export async function setSiteContent(key: string, value: string) {
     .values({ key, value })
     .onConflictDoUpdate({ target: siteContent.key, set: { value, updatedAt: new Date().toISOString() } });
   revalidatePath("/about");
+  revalidatePath("/gear");
+}
+
+export async function getGearImages(): Promise<Record<string, string>> {
+  try {
+    const rows = await db.select().from(siteContent).where(like(siteContent.key, "gear.image.%"));
+    return Object.fromEntries(rows.map((r) => [r.key.replace("gear.image.", ""), r.value]));
+  } catch {
+    return {};
+  }
 }
