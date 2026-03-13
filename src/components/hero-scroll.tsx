@@ -6,7 +6,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { CldUploadWidget } from "next-cloudinary";
 import { HERO_PHOTOS } from "@/data/portfolio";
-import { replaceHeroSlide } from "@/app/actions/hero-slides";
+import { replaceHeroSlide, updateHeroSlideText } from "@/app/actions/hero-slides";
 import { useEditMode } from "@/hooks/use-edit-mode";
 
 type SlideData = { id?: number; url: string; headline: string; sub: string };
@@ -65,10 +65,68 @@ function AdminReplaceOverlay({ slide, onReplaced }: { slide: SlideData; onReplac
   );
 }
 
+// ── Slide text inline edit panel ─────────────────────────────────────────────
+function SlideTextEditor({
+  slide,
+  onSaved,
+}: {
+  slide: SlideData;
+  onSaved: (headline: string, sub: string) => void;
+}) {
+  const [headline, setHeadline] = useState(slide.headline);
+  const [sub, setSub] = useState(slide.sub);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function handleSave() {
+    if (!slide.id) return;
+    setSaving(true);
+    await updateHeroSlideText(slide.id, headline, sub);
+    onSaved(headline, sub);
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <div
+      className="absolute bottom-36 left-1/2 -translate-x-1/2 z-30 bg-black/80 backdrop-blur-md border border-[#2a2a2a] rounded-xl p-4 w-[min(480px,90vw)]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <p className="text-[#c8a96e] text-[9px] tracking-[0.4em] uppercase mb-3">Edit slide text</p>
+      <div className="flex flex-col gap-2 mb-3">
+        <input
+          value={sub}
+          onChange={(e) => setSub(e.target.value)}
+          placeholder="Sub label (e.g. Photography · Action Sports)"
+          className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-[#c8a96e] text-xs focus:outline-none focus:border-[#c8a96e]/50 placeholder-[#333]"
+        />
+        <input
+          value={headline}
+          onChange={(e) => setHeadline(e.target.value)}
+          placeholder="Headline"
+          className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#c8a96e]/50 placeholder-[#333]"
+          onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+        />
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={saving || !slide.id}
+          className="px-4 py-1.5 bg-[#c8a96e] text-black text-[10px] tracking-widest uppercase font-medium rounded-lg hover:bg-[#d4b97a] transition-colors disabled:opacity-40"
+        >
+          {saving ? "Saving…" : saved ? "Saved ✓" : "Save"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main hero scroll ─────────────────────────────────────────────────────────
 export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAdmin?: boolean }) {
   const initialSlides: SlideData[] = dbSlides && dbSlides.length > 0 ? dbSlides : HERO_PHOTOS;
   const [slides, setSlides] = useState<SlideData[]>(initialSlides);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { editMode } = useEditMode();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,8 +135,15 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
   const subTextsRef = useRef<HTMLParagraphElement[]>([]);
   const headlinesRef = useRef<HTMLHeadingElement[]>([]);
 
+  // Track currently visible slide (used to close edit panel when user scrolls away)
+
   function handleReplaced(index: number, newUrl: string) {
     setSlides((prev) => prev.map((s, i) => i === index ? { ...s, url: newUrl } : s));
+  }
+
+  function handleTextSaved(index: number, headline: string, sub: string) {
+    setSlides((prev) => prev.map((s, i) => i === index ? { ...s, headline, sub } : s));
+    setEditingIndex(null);
   }
 
   useEffect(() => {
@@ -161,6 +226,8 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
     return () => ctx.revert();
   }, [slides]);
 
+  const canEdit = isAdmin && editMode;
+
   return (
     <div ref={containerRef} style={{ height: `${slides.length * 120}vh` }} className="relative">
 
@@ -170,7 +237,7 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
           <div
             key={i}
             ref={(el) => { if (el) slidesRef.current[i] = el; }}
-            className={`absolute inset-0 ${isAdmin && editMode && slide.id ? "group/slide" : ""}`}
+            className={`absolute inset-0 ${canEdit && slide.id ? "group/slide" : ""}`}
           >
             <Image
               src={slide.url}
@@ -182,8 +249,7 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/65" />
 
-            {/* Admin replace overlay — only in edit mode */}
-            {isAdmin && editMode && slide.id && (
+            {canEdit && slide.id && (
               <AdminReplaceOverlay
                 slide={slide}
                 onReplaced={(url) => handleReplaced(i, url)}
@@ -197,22 +263,50 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
           <div
             key={i}
             ref={(el) => { if (el) textsRef.current[i] = el; }}
-            className="absolute inset-0 flex flex-col items-center justify-end pb-28 text-center px-6 pointer-events-none"
+            className={`absolute inset-0 flex flex-col items-center justify-end pb-28 text-center px-6 ${canEdit ? "pointer-events-auto" : "pointer-events-none"}`}
           >
             <p
               ref={(el) => { if (el) subTextsRef.current[i] = el; }}
-              className="text-[#c8a96e] text-[11px] tracking-[0.45em] uppercase mb-5"
+              className={`text-[#c8a96e] text-[11px] tracking-[0.45em] uppercase mb-5 ${canEdit ? "cursor-pointer hover:opacity-80" : ""}`}
+              onClick={() => canEdit && setEditingIndex(i)}
             >
               {slide.sub}
             </p>
             <h1
               ref={(el) => { if (el) headlinesRef.current[i] = el; }}
-              className="text-5xl md:text-7xl lg:text-[90px] font-light text-white leading-[0.95] tracking-tight max-w-4xl"
+              className={`text-5xl md:text-7xl lg:text-[90px] font-light text-white leading-[0.95] tracking-tight max-w-4xl ${canEdit ? "cursor-pointer hover:opacity-80" : ""}`}
+              onClick={() => canEdit && setEditingIndex(i)}
             >
               {slide.headline}
             </h1>
+
+            {/* Edit pencil hint */}
+            {canEdit && slide.id && (
+              <button
+                onClick={() => setEditingIndex(i)}
+                className="mt-4 text-[9px] tracking-[0.35em] uppercase text-[#c8a96e]/50 hover:text-[#c8a96e] transition-colors pointer-events-auto"
+              >
+                ✏ Edit text
+              </button>
+            )}
           </div>
         ))}
+
+        {/* Text editor panel — for visible slide */}
+        {canEdit && editingIndex !== null && slides[editingIndex]?.id && (
+          <SlideTextEditor
+            slide={slides[editingIndex]}
+            onSaved={(h, s) => handleTextSaved(editingIndex, h, s)}
+          />
+        )}
+
+        {/* Click outside to close editor */}
+        {canEdit && editingIndex !== null && (
+          <div
+            className="absolute inset-0 z-20"
+            onClick={() => setEditingIndex(null)}
+          />
+        )}
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5 pointer-events-none">

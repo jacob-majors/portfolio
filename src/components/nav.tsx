@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { useEditMode } from "@/hooks/use-edit-mode";
+import { publishToGitHub } from "@/app/actions/publish";
 
 const links = [
   { href: "/photography", label: "Photography" },
@@ -16,6 +17,8 @@ const links = [
 export function Nav({ isAdmin }: { isAdmin?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishMsg, setPublishMsg] = useState<string | null>(null);
   const pathname = usePathname();
   const { editMode, setEditMode } = useEditMode();
 
@@ -24,6 +27,15 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  async function handlePublish() {
+    setPublishing(true);
+    setPublishMsg(null);
+    const result = await publishToGitHub();
+    setPublishMsg(result.ok ? "Pushed ✓" : "Error");
+    setPublishing(false);
+    setTimeout(() => setPublishMsg(null), 3000);
+  }
 
   return (
     <nav
@@ -54,27 +66,47 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
             </Link>
           ))}
 
-          {/* Admin edit mode toggle */}
           {isAdmin && (
-            <div className="flex items-center gap-1 border border-[#2a2a2a] rounded-full p-0.5 ml-2">
-              <button
-                onClick={() => setEditMode(false)}
-                className={clsx(
-                  "px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-medium transition-all",
-                  !editMode ? "bg-white text-black" : "text-[#555] hover:text-white"
-                )}
-              >
-                View
-              </button>
-              <button
-                onClick={() => setEditMode(true)}
-                className={clsx(
-                  "px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-medium transition-all",
-                  editMode ? "bg-[#c8a96e] text-black" : "text-[#555] hover:text-[#c8a96e]"
-                )}
-              >
-                Edit
-              </button>
+            <div className="flex items-center gap-2">
+              {/* View / Edit toggle */}
+              <div className="flex items-center gap-1 border border-[#2a2a2a] rounded-full p-0.5">
+                <button
+                  onClick={() => setEditMode(false)}
+                  className={clsx(
+                    "px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-medium transition-all",
+                    !editMode ? "bg-white text-black" : "text-[#555] hover:text-white"
+                  )}
+                >
+                  View
+                </button>
+                <button
+                  onClick={() => setEditMode(true)}
+                  className={clsx(
+                    "px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-medium transition-all",
+                    editMode ? "bg-[#c8a96e] text-black" : "text-[#555] hover:text-[#c8a96e]"
+                  )}
+                >
+                  Edit
+                </button>
+              </div>
+
+              {/* Publish button */}
+              {editMode && (
+                <button
+                  onClick={handlePublish}
+                  disabled={publishing}
+                  className={clsx(
+                    "px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-medium border transition-all disabled:opacity-50",
+                    publishMsg === "Pushed ✓"
+                      ? "border-green-600/60 text-green-400"
+                      : publishMsg === "Error"
+                      ? "border-red-600/60 text-red-400"
+                      : "border-[#2a2a2a] text-[#666] hover:border-[#c8a96e]/60 hover:text-[#c8a96e]"
+                  )}
+                >
+                  {publishing ? "Pushing…" : (publishMsg ?? "Push")}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -94,7 +126,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
       {/* Mobile menu */}
       <div className={clsx(
         "md:hidden overflow-hidden transition-all duration-500",
-        menuOpen ? "max-h-72 opacity-100" : "max-h-0 opacity-0"
+        menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
       )}>
         <div className="px-6 pb-6 flex flex-col gap-6 border-b border-[#1a1a1a]">
           {links.map((link) => (
@@ -111,7 +143,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
             </Link>
           ))}
           {isAdmin && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setEditMode(false)}
                 className={clsx(
@@ -130,6 +162,15 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
               >
                 Edit
               </button>
+              {editMode && (
+                <button
+                  onClick={handlePublish}
+                  disabled={publishing}
+                  className="px-3 py-1.5 rounded-full text-[10px] tracking-widest uppercase font-medium border border-[#2a2a2a] text-[#666] transition-all"
+                >
+                  {publishing ? "Pushing…" : (publishMsg ?? "Push")}
+                </button>
+              )}
             </div>
           )}
         </div>

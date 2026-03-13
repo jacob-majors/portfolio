@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { auth } from "@/auth";
 import { getSiteContent } from "@/app/actions/site-content";
 import { AboutContent } from "@/components/about-content";
+import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
   title: "About",
@@ -27,41 +27,55 @@ export default async function AboutPage() {
   const isAdmin = !!session?.user;
 
   const keys = Object.keys(DEFAULTS) as (keyof typeof DEFAULTS)[];
-  const values = await Promise.all(keys.map((k) => getSiteContent(`about.${k}`)));
+  const [values, personalUrl, mediaUrl] = await Promise.all([
+    Promise.all(keys.map((k) => getSiteContent(`about.${k}`))),
+    getSiteContent("about.instagram_personal"),
+    getSiteContent("about.instagram_media"),
+  ]);
 
   const data = Object.fromEntries(
     keys.map((k, i) => [k, values[i] ?? DEFAULTS[k]])
   ) as typeof DEFAULTS;
 
+  const instagramPersonal = personalUrl ?? "https://www.instagram.com/_jacobmajors_/";
+  const instagramMedia = mediaUrl ?? "https://www.instagram.com/jacobmajorsmedia/";
+
   return (
-    <main className="pt-24 min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-20">
+    <main className="pt-24 min-h-screen flex flex-col">
+      <div className="max-w-3xl mx-auto px-6 py-20 flex-1 w-full">
         <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-6">About</p>
+
+        {/* Social icons — top */}
+        <SocialLinks
+          instagramPersonal={instagramPersonal}
+          instagramMedia={instagramMedia}
+          isAdmin={isAdmin}
+          position="top"
+        />
+
         <AboutContent data={data} isAdmin={isAdmin} />
 
-        {/* Social links */}
-        <div className="mt-16 pt-10 border-t border-[#1a1a1a] flex flex-col sm:flex-row gap-4">
-          <Link
-            href="https://www.instagram.com/_jacobmajors_/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 group"
-          >
-            <span className="text-[#c8a96e] text-[9px] tracking-[0.4em] uppercase">Instagram</span>
-            <span className="text-[#555] text-xs group-hover:text-white transition-colors">@_jacobmajors_</span>
-          </Link>
-          <span className="hidden sm:block text-[#1f1f1f]">·</span>
-          <Link
-            href="https://www.instagram.com/jacobmajorsmedia/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 group"
-          >
-            <span className="text-[#c8a96e] text-[9px] tracking-[0.4em] uppercase">Photography</span>
-            <span className="text-[#555] text-xs group-hover:text-white transition-colors">@jacobmajorsmedia</span>
-          </Link>
-        </div>
+        {/* Social links — bottom */}
+        <SocialLinks
+          instagramPersonal={instagramPersonal}
+          instagramMedia={instagramMedia}
+          isAdmin={isAdmin}
+          position="bottom"
+        />
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-[#1a1a1a] py-8">
+        <div className="max-w-3xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[#333] text-[10px] tracking-[0.3em] uppercase">Jacob Majors</p>
+          <SocialLinks
+            instagramPersonal={instagramPersonal}
+            instagramMedia={instagramMedia}
+            isAdmin={false}
+            position="footer"
+          />
+        </div>
+      </footer>
     </main>
   );
 }
