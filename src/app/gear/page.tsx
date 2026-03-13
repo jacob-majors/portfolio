@@ -17,6 +17,10 @@ type GearItem = {
   imageUrl?: string;
 };
 
+// Wrap any external URL through Cloudinary fetch so it's served from an allowed domain
+const CLD = (url: string) =>
+  `https://res.cloudinary.com/dh9kjvs42/image/fetch/f_auto,q_auto,w_600/${encodeURIComponent(url)}`;
+
 const GEAR: GearItem[] = [
   // ── Skiing ────────────────────────────────────────────────────────────────
   {
@@ -24,9 +28,9 @@ const GEAR: GearItem[] = [
     brand: "Faction",
     category: "Skiing",
     description:
-      "My all-mountain ski. Playful enough for park laps but stiff enough to charge. The pink topsheet doesn't hurt either.",
-    link: "https://www.factionskis.com/collections/prodigy",
-    // imageUrl added when photo is uploaded
+      "My all-mountain ski. Playful enough for park laps but stiff enough to charge. The pink topsheet speaks for itself.",
+    link: "https://factionskis.com/en-us/products/prodigy-3-ski",
+    imageUrl: CLD("https://factionskis.com/cdn/shop/files/Faction-Skis-2526-Prodigy-3-Topsheet-1x1.jpg?v=1750405805"),
   },
   {
     name: "Pivot GW 14",
@@ -34,7 +38,7 @@ const GEAR: GearItem[] = [
     category: "Skiing",
     description:
       "The benchmark alpine binding. Wide elasticity window, incredibly reliable release, and you can feel the difference in edge transmission.",
-    link: "https://www.lookpedals.com/ski/pivot-14-gw",
+    link: "https://www.rei.com/product/161327/look-pivot-14-gw-ski-bindings",
   },
   {
     name: "Tigard",
@@ -68,7 +72,7 @@ const GEAR: GearItem[] = [
     category: "Climbing",
     description:
       "A bit heavy but it's durable and has good shoulder and waist straps. Holds everything I need for a big day out.",
-    link: "https://www.amazon.com/s?k=Osprey+Cinder+55",
+    link: "https://www.rei.com/search#?q=osprey+cinder+55",
   },
   {
     name: "Litewire Carabiner",
@@ -83,8 +87,8 @@ const GEAR: GearItem[] = [
     brand: "Black Diamond",
     category: "Climbing",
     description:
-      "I only use these for sizes 1–6. For anything smaller I run Z4s — they're lighter and easier to place in thin cracks.",
-    link: "https://www.blackdiamondequipment.com/en_US/product/camalot-c4/",
+      "I only use these for sizes 1–6. For anything smaller I run Z4s — lighter and easier to place in thin cracks.",
+    link: "https://www.rei.com/product/138519/black-diamond-camalot-c4-cam",
   },
   {
     name: "Camalot Z4",
@@ -92,7 +96,7 @@ const GEAR: GearItem[] = [
     category: "Climbing",
     description:
       "My choice for anything smaller than a #1 C4. Great for thin cracks where the C4 is overkill.",
-    link: "https://www.blackdiamondequipment.com/en_US/product/camalot-z4/",
+    link: "https://www.rei.com/product/169038/black-diamond-camalot-z4-cam",
   },
   {
     name: "GriGri",
@@ -100,14 +104,14 @@ const GEAR: GearItem[] = [
     category: "Climbing",
     description:
       "Standard belay device. Also use it for filming rigs — clip a pulley to the top when setting up a top-rope filming system, unless traversing.",
-    link: "https://www.petzl.com/US/en/Sport/Belay-devices/GRIGRI",
+    link: "https://www.rei.com/product/151970/petzl-grigri-belay-device",
   },
   {
     name: "Ascenders",
     brand: "Petzl",
     category: "Climbing",
     description:
-      "I use an SMD as a master point and clip my ladders and daisy chain to that. Add a pulley to the top when using a GriGri for filming. For top-rope soloing I add a Micro Traxion and a SPOC as a backup.",
+      "I use an SMD as a master point and clip my ladders and daisy chain to that. Add a pulley to the top when using a GriGri for filming. For top-rope soloing I add a Micro Traxion and SPOC as backup.",
     link: "https://www.petzl.com/US/en/Sport/Ascenders/ASCENSION",
   },
   {
@@ -116,22 +120,22 @@ const GEAR: GearItem[] = [
     category: "Climbing",
     description:
       "Essential for top-rope soloing. Runs smooth and locks hard. Pairs with the SPOC as a redundant backup system.",
-    link: "https://www.petzl.com/US/en/Sport/Pulleys/MICRO-TRAXION",
+    link: "https://www.rei.com/product/834987/petzl-micro-traxion-pulley",
   },
   {
     name: "SPOC",
-    brand: "Petzl",
+    brand: "Eldrid",
     category: "Climbing",
     description:
-      "Top-rope soloing backup. I always run this alongside the Micro Traxion for a redundant catch system.",
-    link: "https://www.petzl.com/US/en/Sport/Belay-devices/SPOC",
+      "Progress capture device I use as a top-rope soloing backup. Always run alongside the Micro Traxion for a redundant catch system.",
+    link: "https://www.eldrid.com",
   },
   {
     name: "Hot Forge Screwgate",
     brand: "Black Diamond",
     category: "Climbing",
     description:
-      "A good smaller screwgate locker. Solid and lightweight — I use these anywhere I need a reliable gate without the bulk.",
+      "Good smaller screwgate locker. Solid and lightweight — I use these anywhere I need a reliable gate without the bulk.",
     link: "https://www.blackdiamondequipment.com/en_US/product/hot-forge-screwgate-carabiner/",
   },
   // ── Photography ──────────────────────────────────────────────────────────
@@ -141,23 +145,23 @@ const GEAR: GearItem[] = [
     category: "Photography",
     description:
       "My primary camera body. Full-frame sensor in a compact package. The 5-axis IBIS makes a real difference for handheld telephoto work at events.",
-    link: "https://www.amazon.com/s?k=Sony+A7II",
+    link: "https://www.bhphotovideo.com/c/search?q=sony+a7+ii",
   },
   {
     name: "70-300mm f/4.5-6.3 Di III RXD",
     brand: "Tamron",
     category: "Photography",
     description:
-      "Lightweight telephoto for action and sports. Reaches far enough to isolate riders and athletes from the crowd. Surprisingly sharp for the size and price.",
-    link: "https://www.tamron.com/en-us/consumer/lenses/a047/",
+      "Lightweight telephoto for action and sports. Reaches far enough to isolate riders and athletes. Surprisingly sharp for the size and price.",
+    link: "https://www.bhphotovideo.com/c/search?q=tamron+70-300+a047+sony",
   },
   {
-    name: "Peter McKinnon Backpack V2",
+    name: "Peter McKinnon Camera Pack",
     brand: "Nomatic",
     category: "Photography",
     description:
-      "Holds my body, lenses, and a laptop with room for a layer and some snacks. The magnetic closure on the main compartment is genuinely fast when you need to get a shot quickly.",
-    link: "https://www.nomatic.com/products/nomatic-peter-mckinnon-camera-pack-v2",
+      "Holds my body, lenses, and a laptop with room for a layer and snacks. The magnetic closure on the main compartment is fast when you need to get a shot quickly.",
+    link: "https://www.nomatic.com/products/camera-pack",
   },
   // ── Camping ───────────────────────────────────────────────────────────────
   {
@@ -166,7 +170,7 @@ const GEAR: GearItem[] = [
     category: "Camping",
     description:
       "Warm enough for high-altitude Sierra nights without being overkill. Packs down small and feels quality for the weight.",
-    link: "https://www.mountainhardwear.com/collections/sleeping-bags",
+    link: "https://www.rei.com/search#?q=mountain+hardwear+bishop+pass+15",
   },
   {
     name: "Tensor Sleeping Pad",
@@ -174,7 +178,7 @@ const GEAR: GearItem[] = [
     category: "Camping",
     description:
       "Ultralight and comfortable. The R-value is solid for three-season use and it inflates fast. One of the better pads at this weight.",
-    link: "https://www.nemoequipment.com/collections/sleeping-pads",
+    link: "https://www.rei.com/search#?q=nemo+tensor",
   },
   {
     name: "Jetboil",
@@ -182,17 +186,58 @@ const GEAR: GearItem[] = [
     category: "Camping",
     description:
       "Fast, fuel-efficient, and foolproof. Boils water in under two minutes and the integrated cup keeps everything in one piece.",
-    link: "https://www.amazon.com/s?k=jetboil+flash",
+    link: "https://www.rei.com/search#?q=jetboil+flash",
   },
 ];
 
 const CATEGORY_ORDER = ["Skiing", "Touring", "Climbing", "Photography", "Camping"];
 const CATEGORIES = CATEGORY_ORDER.filter((c) => GEAR.some((g) => g.category === c));
 
+function GearCard({ item }: { item: GearItem }) {
+  return (
+    <div className="border border-[#1a1a1a] rounded-xl overflow-hidden flex flex-col group hover:border-[#2a2a2a] transition-colors duration-300">
+      {/* Image / placeholder */}
+      <div className="relative aspect-[4/3] bg-[#0d0d0d] overflow-hidden">
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <span className="text-[#1f1f1f] text-[10px] tracking-[0.4em] uppercase">{item.brand}</span>
+            <span className="text-[#1a1a1a] text-lg font-light">{item.name}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col flex-1">
+        <p className="text-[#444] text-[9px] tracking-[0.35em] uppercase mb-1">{item.brand}</p>
+        <h2 className="text-white text-sm font-light leading-snug mb-3">{item.name}</h2>
+        <p className="text-[#555] text-xs leading-relaxed flex-1">{item.description}</p>
+        {item.link && (
+          <Link
+            href={item.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 self-start text-[9px] tracking-[0.3em] uppercase text-[#c8a96e] border border-[#c8a96e]/30 px-3 py-1.5 rounded hover:bg-[#c8a96e]/10 transition-colors"
+          >
+            View →
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function GearPage() {
   return (
     <main className="pt-24 min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto px-6 py-16">
         <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-4">Kit</p>
         <h1 className="text-5xl md:text-7xl font-light text-white mb-4">Gear</h1>
         <p className="text-[#666] text-lg mb-20">What I actually use and why.</p>
@@ -203,39 +248,9 @@ export default function GearPage() {
               <p className="text-[#c8a96e] text-[10px] tracking-[0.4em] uppercase">{cat}</p>
               <div className="flex-1 h-px bg-[#1a1a1a]" />
             </div>
-
-            <div className="divide-y divide-[#111]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {GEAR.filter((g) => g.category === cat).map((item) => (
-                <div key={item.name} className="py-8 flex flex-col sm:flex-row sm:items-start gap-6">
-                  {item.imageUrl && (
-                    <div className="relative w-full sm:w-32 h-32 rounded-lg overflow-hidden shrink-0 border border-[#1a1a1a]">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="128px"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-3 mb-2">
-                      <h2 className="text-white text-xl font-light">{item.name}</h2>
-                      <span className="text-[#555] text-xs tracking-widest uppercase">{item.brand}</span>
-                    </div>
-                    <p className="text-[#666] text-sm leading-relaxed max-w-xl">{item.description}</p>
-                  </div>
-                  {item.link && (
-                    <Link
-                      href={item.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 self-start mt-1 text-[10px] tracking-[0.3em] uppercase text-[#c8a96e] border border-[#c8a96e]/30 px-3 py-1.5 rounded hover:bg-[#c8a96e]/10 transition-colors whitespace-nowrap"
-                    >
-                      View →
-                    </Link>
-                  )}
-                </div>
+                <GearCard key={item.name} item={item} />
               ))}
             </div>
           </section>
