@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Gear",
-  description: "Gear used by Jacob Majors for climbing, photography, and skiing.",
+  description: "Gear used by Jacob Majors for climbing, photography, skiing, and camping.",
   robots: { index: false, follow: false },
 };
 
@@ -17,6 +18,49 @@ type GearItem = {
 };
 
 const GEAR: GearItem[] = [
+  // ── Skiing ────────────────────────────────────────────────────────────────
+  {
+    name: "Prodigy 3s",
+    brand: "Faction",
+    category: "Skiing",
+    description:
+      "My all-mountain ski. Playful enough for park laps but stiff enough to charge. The pink topsheet doesn't hurt either.",
+    link: "https://www.factionskis.com/collections/prodigy",
+    // imageUrl added when photo is uploaded
+  },
+  {
+    name: "Pivot GW 14",
+    brand: "Look",
+    category: "Skiing",
+    description:
+      "The benchmark alpine binding. Wide elasticity window, incredibly reliable release, and you can feel the difference in edge transmission.",
+    link: "https://www.lookpedals.com/ski/pivot-14-gw",
+  },
+  {
+    name: "Tigard",
+    brand: "Dynafit",
+    category: "Skiing",
+    description:
+      "My everyday ski boot. Stiff enough for charging hard snow but walkable enough that I don't hate life in the lodge.",
+    link: "https://www.dynafit.com/en-US/tigard",
+  },
+  // ── Touring ───────────────────────────────────────────────────────────────
+  {
+    name: "Helio Carbon 104",
+    brand: "Black Diamond",
+    category: "Touring",
+    description:
+      "Incredibly light for a 104mm waist ski. The carbon construction makes a real difference on long approaches. My go-to for backcountry days.",
+    link: "https://www.blackdiamondequipment.com/en_US/product/helio-carbon-104-skis/",
+  },
+  {
+    name: "Rotation 10",
+    brand: "Dynafit",
+    category: "Touring",
+    description:
+      "Light touring binding that doesn't feel sketchy skiing down. Step-in is fast even with gloves, which matters when it's cold.",
+    link: "https://www.dynafit.com/en-US/rotation-10",
+  },
   // ── Climbing ──────────────────────────────────────────────────────────────
   {
     name: "Cinder 55",
@@ -31,7 +75,7 @@ const GEAR: GearItem[] = [
     brand: "Black Diamond",
     category: "Climbing",
     description:
-      "My go-to racking carabiner. Light enough to not notice on the harness but solid enough to trust.",
+      "My go-to racking carabiner. Light enough not to notice on the harness but solid enough to trust.",
     link: "https://www.blackdiamondequipment.com/en_US/product/litewire-carabiner/",
   },
   {
@@ -43,7 +87,7 @@ const GEAR: GearItem[] = [
     link: "https://www.blackdiamondequipment.com/en_US/product/camalot-c4/",
   },
   {
-    name: "Z4 Cams",
+    name: "Camalot Z4",
     brand: "Black Diamond",
     category: "Climbing",
     description:
@@ -55,7 +99,7 @@ const GEAR: GearItem[] = [
     brand: "Petzl",
     category: "Climbing",
     description:
-      "Standard belay device. I also use it for filming rigs — clip a pulley to the top when setting up a system for top-rope filming, unless traversing.",
+      "Standard belay device. Also use it for filming rigs — clip a pulley to the top when setting up a top-rope filming system, unless traversing.",
     link: "https://www.petzl.com/US/en/Sport/Belay-devices/GRIGRI",
   },
   {
@@ -71,7 +115,7 @@ const GEAR: GearItem[] = [
     brand: "Petzl",
     category: "Climbing",
     description:
-      "Essential for top-rope soloing. Runs smooth and locks hard. Pairs well with the SPOC as a backup system.",
+      "Essential for top-rope soloing. Runs smooth and locks hard. Pairs with the SPOC as a redundant backup system.",
     link: "https://www.petzl.com/US/en/Sport/Pulleys/MICRO-TRAXION",
   },
   {
@@ -87,12 +131,63 @@ const GEAR: GearItem[] = [
     brand: "Black Diamond",
     category: "Climbing",
     description:
-      "A good smaller screwgate locker. Solid and lightweight — I use these anywhere I need a reliable gate without the bulk of a larger locker.",
+      "A good smaller screwgate locker. Solid and lightweight — I use these anywhere I need a reliable gate without the bulk.",
     link: "https://www.blackdiamondequipment.com/en_US/product/hot-forge-screwgate-carabiner/",
+  },
+  // ── Photography ──────────────────────────────────────────────────────────
+  {
+    name: "α7 II",
+    brand: "Sony",
+    category: "Photography",
+    description:
+      "My primary camera body. Full-frame sensor in a compact package. The 5-axis IBIS makes a real difference for handheld telephoto work at events.",
+    link: "https://www.amazon.com/s?k=Sony+A7II",
+  },
+  {
+    name: "70-300mm f/4.5-6.3 Di III RXD",
+    brand: "Tamron",
+    category: "Photography",
+    description:
+      "Lightweight telephoto for action and sports. Reaches far enough to isolate riders and athletes from the crowd. Surprisingly sharp for the size and price.",
+    link: "https://www.tamron.com/en-us/consumer/lenses/a047/",
+  },
+  {
+    name: "Peter McKinnon Backpack V2",
+    brand: "Nomatic",
+    category: "Photography",
+    description:
+      "Holds my body, lenses, and a laptop with room for a layer and some snacks. The magnetic closure on the main compartment is genuinely fast when you need to get a shot quickly.",
+    link: "https://www.nomatic.com/products/nomatic-peter-mckinnon-camera-pack-v2",
+  },
+  // ── Camping ───────────────────────────────────────────────────────────────
+  {
+    name: "Bishop Pass 15°",
+    brand: "Mountain Hardwear",
+    category: "Camping",
+    description:
+      "Warm enough for high-altitude Sierra nights without being overkill. Packs down small and feels quality for the weight.",
+    link: "https://www.mountainhardwear.com/collections/sleeping-bags",
+  },
+  {
+    name: "Tensor Sleeping Pad",
+    brand: "Nemo",
+    category: "Camping",
+    description:
+      "Ultralight and comfortable. The R-value is solid for three-season use and it inflates fast. One of the better pads at this weight.",
+    link: "https://www.nemoequipment.com/collections/sleeping-pads",
+  },
+  {
+    name: "Jetboil",
+    brand: "Jetboil",
+    category: "Camping",
+    description:
+      "Fast, fuel-efficient, and foolproof. Boils water in under two minutes and the integrated cup keeps everything in one piece.",
+    link: "https://www.amazon.com/s?k=jetboil+flash",
   },
 ];
 
-const CATEGORIES = Array.from(new Set(GEAR.map((g) => g.category)));
+const CATEGORY_ORDER = ["Skiing", "Touring", "Climbing", "Photography", "Camping"];
+const CATEGORIES = CATEGORY_ORDER.filter((c) => GEAR.some((g) => g.category === c));
 
 export default function GearPage() {
   return (
@@ -109,9 +204,20 @@ export default function GearPage() {
               <div className="flex-1 h-px bg-[#1a1a1a]" />
             </div>
 
-            <div className="space-y-0 divide-y divide-[#111]">
+            <div className="divide-y divide-[#111]">
               {GEAR.filter((g) => g.category === cat).map((item) => (
-                <div key={item.name} className="py-8 flex flex-col sm:flex-row sm:items-start gap-4">
+                <div key={item.name} className="py-8 flex flex-col sm:flex-row sm:items-start gap-6">
+                  {item.imageUrl && (
+                    <div className="relative w-full sm:w-32 h-32 rounded-lg overflow-hidden shrink-0 border border-[#1a1a1a]">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="128px"
+                      />
+                    </div>
+                  )}
                   <div className="flex-1">
                     <div className="flex items-baseline gap-3 mb-2">
                       <h2 className="text-white text-xl font-light">{item.name}</h2>
@@ -124,7 +230,7 @@ export default function GearPage() {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 self-start mt-1 text-[10px] tracking-[0.3em] uppercase text-[#c8a96e] border border-[#c8a96e]/30 px-3 py-1.5 rounded hover:bg-[#c8a96e]/10 transition-colors"
+                      className="shrink-0 self-start mt-1 text-[10px] tracking-[0.3em] uppercase text-[#c8a96e] border border-[#c8a96e]/30 px-3 py-1.5 rounded hover:bg-[#c8a96e]/10 transition-colors whitespace-nowrap"
                     >
                       View →
                     </Link>
