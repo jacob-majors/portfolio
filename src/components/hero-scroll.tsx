@@ -7,6 +7,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { CldUploadWidget } from "next-cloudinary";
 import { HERO_PHOTOS } from "@/data/portfolio";
 import { replaceHeroSlide } from "@/app/actions/hero-slides";
+import { useEditMode } from "@/hooks/use-edit-mode";
 
 type SlideData = { id?: number; url: string; headline: string; sub: string };
 
@@ -68,6 +69,7 @@ function AdminReplaceOverlay({ slide, onReplaced }: { slide: SlideData; onReplac
 export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAdmin?: boolean }) {
   const initialSlides: SlideData[] = dbSlides && dbSlides.length > 0 ? dbSlides : HERO_PHOTOS;
   const [slides, setSlides] = useState<SlideData[]>(initialSlides);
+  const { editMode } = useEditMode();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement[]>([]);
@@ -168,7 +170,7 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
           <div
             key={i}
             ref={(el) => { if (el) slidesRef.current[i] = el; }}
-            className={`absolute inset-0 ${isAdmin && slide.id ? "group/slide" : ""}`}
+            className={`absolute inset-0 ${isAdmin && editMode && slide.id ? "group/slide" : ""}`}
           >
             <Image
               src={slide.url}
@@ -180,8 +182,8 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/65" />
 
-            {/* Admin replace overlay */}
-            {isAdmin && slide.id && (
+            {/* Admin replace overlay — only in edit mode */}
+            {isAdmin && editMode && slide.id && (
               <AdminReplaceOverlay
                 slide={slide}
                 onReplaced={(url) => handleReplaced(i, url)}

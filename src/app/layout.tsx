@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { PageTransition } from "@/components/page-transition";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -18,15 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  const isAdmin = !!session?.user;
+
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
-        <Nav />
+        <Nav isAdmin={isAdmin} />
         <PageTransition>{children}</PageTransition>
       </body>
     </html>

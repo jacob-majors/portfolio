@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { InlineEdit } from "./inline-edit";
+import { useEditMode } from "@/hooks/use-edit-mode";
 
 type AboutData = {
   headline: string;
@@ -42,7 +42,7 @@ function ContentView({ data }: { data: AboutData }) {
 }
 
 export function AboutContent({ data, isAdmin }: { data: AboutData; isAdmin: boolean }) {
-  const [editMode, setEditMode] = useState(false);
+  const { editMode } = useEditMode();
 
   if (!isAdmin) {
     return <ContentView data={data} />;
@@ -50,29 +50,6 @@ export function AboutContent({ data, isAdmin }: { data: AboutData; isAdmin: bool
 
   return (
     <div>
-      {/* Admin toolbar */}
-      <div className="mb-8 flex items-center gap-3">
-        <button
-          onClick={() => setEditMode(false)}
-          className={`px-4 py-1.5 rounded-full text-xs tracking-widest uppercase font-medium transition-all ${
-            !editMode
-              ? "bg-white text-black"
-              : "border border-[#333] text-[#666] hover:border-white hover:text-white"
-          }`}
-        >
-          View
-        </button>
-        <button
-          onClick={() => setEditMode(true)}
-          className={`px-4 py-1.5 rounded-full text-xs tracking-widest uppercase font-medium transition-all ${
-            editMode
-              ? "bg-[#c8a96e] text-black"
-              : "border border-[#333] text-[#666] hover:border-[#c8a96e] hover:text-white"
-          }`}
-        >
-          Edit
-        </button>
-      </div>
 
       {!editMode ? (
         <ContentView data={data} />
