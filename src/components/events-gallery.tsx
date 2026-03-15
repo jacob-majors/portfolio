@@ -236,12 +236,34 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
     setViewPhoto({ ...viewPhoto, entry: viewPhoto.all[idx], idx });
   }, [viewPhoto]);
 
-  // Lock body scroll whenever any overlay is open (critical on iOS — prevents
-  // the background page from scrolling behind a fixed overlay)
+  // Lock body scroll when any overlay is open.
+  // On iOS, overflow:hidden on <body> is ignored — the reliable fix is
+  // position:fixed + saved scroll offset so the page doesn't jump and
+  // GSAP's ScrollTrigger can't react to stray momentum scroll events.
   useEffect(() => {
     const anyOpen = openLacrosse || !!openEvent || !!viewPhoto;
-    document.body.style.overflow = anyOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (anyOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.overflow = "hidden";
+      // Block stray wheel/touch-move events from reaching GSAP on the window
+      const block = (e: Event) => e.stopPropagation();
+      window.addEventListener("wheel", block, { capture: true, passive: true });
+      window.addEventListener("touchmove", block, { capture: true, passive: true });
+      return () => {
+        window.removeEventListener("wheel", block, { capture: true });
+        window.removeEventListener("touchmove", block, { capture: true });
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.overflow = "";
+        window.scrollTo(0, scrollY);
+      };
+    }
   }, [openLacrosse, openEvent, viewPhoto]);
 
   // Keyboard nav
@@ -449,7 +471,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
       {/* ── Lacrosse lightbox ── */}
       <AnimatePresence>
         {openLacrosse && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black overflow-y-auto" style={{ overscrollBehavior: "none", WebkitOverflowScrolling: "touch" }}>
             {/* Sticky header */}
             <div className="sticky top-0 z-10 bg-black/90 backdrop-blur-md border-b border-[#1a1a1a] px-4 sm:px-6 py-3 sm:py-4">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
@@ -492,7 +514,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
       {/* ── Other event lightbox ── */}
       <AnimatePresence>
         {openEvent && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black overflow-y-auto" style={{ overscrollBehavior: "none", WebkitOverflowScrolling: "touch" }}>
             <div className="sticky top-0 z-10 bg-black/90 backdrop-blur-md border-b border-[#1a1a1a] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
               <div className="min-w-0 pr-3">
                 <p className="text-[#c8a96e] text-[9px] sm:text-[10px] tracking-[0.3em] uppercase">
