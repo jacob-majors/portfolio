@@ -21,6 +21,20 @@ export async function setSiteContent(key: string, value: string) {
     .onConflictDoUpdate({ target: siteContent.key, set: { value, updatedAt: new Date().toISOString() } });
   revalidatePath("/about");
   revalidatePath("/gear");
+  if (key.startsWith("settings.nav")) {
+    revalidatePath("/", "layout");
+  }
+}
+
+export async function getAllPhotoTagKeys(): Promise<{ key: string; value: string }[]> {
+  try {
+    const rows = await db.select().from(siteContent).where(like(siteContent.key, "photo.tags.%"));
+    return rows.filter(
+      (r) => r.key !== "photo.tags.all" && r.key !== "photo.tags.searchIndex"
+    );
+  } catch {
+    return [];
+  }
 }
 
 export async function getGearContent(): Promise<{

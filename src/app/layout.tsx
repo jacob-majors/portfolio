@@ -5,6 +5,7 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { PageTransition } from "@/components/page-transition";
 import { auth } from "@/auth";
+import { getSiteContent } from "@/app/actions/site-content";
 
 export const metadata: Metadata = {
   title: {
@@ -26,11 +27,16 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   const isAdmin = !!session?.user;
+  let navSettings = { showEngineering: false, showWriting: false };
+  try {
+    const raw = await getSiteContent("settings.nav");
+    if (raw) navSettings = { ...navSettings, ...JSON.parse(raw) };
+  } catch {}
 
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
-        <Nav isAdmin={isAdmin} />
+        <Nav isAdmin={isAdmin} navSettings={navSettings} />
         <PageTransition>{children}</PageTransition>
       </body>
     </html>

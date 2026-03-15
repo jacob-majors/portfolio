@@ -7,14 +7,21 @@ import { clsx } from "clsx";
 import { useEditMode } from "@/hooks/use-edit-mode";
 import { publishToGitHub } from "@/app/actions/publish";
 
-const links = [
-  { href: "/photography", label: "Photography" },
-  { href: "/projects", label: "Engineering", hidden: true }, // TEMP hidden
-  { href: "/blog", label: "Writing", hidden: true }, // TEMP hidden
-  { href: "/about", label: "About" },
+const BASE_LINKS = [
+  { href: "/photography", label: "Photography", settingKey: null },
+  { href: "/projects", label: "Engineering", settingKey: "showEngineering" },
+  { href: "/blog", label: "Writing", settingKey: "showWriting" },
+  { href: "/about", label: "About", settingKey: null },
 ];
 
-export function Nav({ isAdmin }: { isAdmin?: boolean }) {
+export function Nav({ isAdmin, navSettings }: {
+  isAdmin?: boolean;
+  navSettings?: { showEngineering?: boolean; showWriting?: boolean };
+}) {
+  const links = BASE_LINKS.filter((l) => {
+    if (!l.settingKey) return true;
+    return navSettings?.[l.settingKey as keyof typeof navSettings] ?? false;
+  });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);

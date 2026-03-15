@@ -9,7 +9,18 @@ import { DownloadModal } from "@/components/download-modal";
 import { getSiteContent, setSiteContent } from "@/app/actions/site-content";
 import { useEditMode } from "@/hooks/use-edit-mode";
 
-type Tag = { number: string; name: string };
+type Tag = { number: string; name: string; sport?: string };
+
+const SPORT_COLORS: Record<string, string> = {
+  lacrosse:    "#4a9eff",
+  basketball:  "#f97316",
+  "bike-races":"#22c55e",
+  soccer:      "#a855f7",
+  climbing:    "#ef4444",
+};
+function tagAccent(sport?: string) {
+  return sport ? (SPORT_COLORS[sport] ?? "#c8a96e") : "#c8a96e";
+}
 type LacrossePhoto = { id: number; cloudinaryUrl: string; title: string; cloudinaryId: string };
 // photoKey is used as the siteContent key for tags; derived from cloudinaryId for DB photos
 // or from the event id + index for static local photos
@@ -30,7 +41,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
   const [openEvent, setOpenEvent] = useState<PortfolioEvent | null>(null);
   const [openLacrosse, setOpenLacrosse] = useState(false);
   const [downloadTarget, setDownloadTarget] = useState<{ url: string; filename: string } | null>(null);
-  const [viewPhoto, setViewPhoto] = useState<{ entry: ViewEntry; all: ViewEntry[]; idx: number; prefix: string } | null>(null);
+  const [viewPhoto, setViewPhoto] = useState<{ entry: ViewEntry; all: ViewEntry[]; idx: number; prefix: string; sport?: string } | null>(null);
   const [viewTags, setViewTags] = useState<Tag[]>([]);
   const [tagDraft, setTagDraft] = useState({ number: "", name: "" });
   const [tagSaving, setTagSaving] = useState(false);
@@ -159,18 +170,19 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
     const key = viewPhoto ? getTagKey(viewPhoto.entry) : undefined;
     if (!key || (!tagDraft.number && !tagDraft.name)) return;
     setTagSaving(true);
+    const sport = viewPhoto?.sport;
     let updated: Tag[];
     if (editingTagIdx !== null) {
-      updated = viewTags.map((t, i) => i === editingTagIdx ? { number: tagDraft.number, name: tagDraft.name } : t);
+      updated = viewTags.map((t, i) => i === editingTagIdx ? { number: tagDraft.number, name: tagDraft.name, sport: t.sport ?? sport } : t);
     } else {
-      updated = [...viewTags, { number: tagDraft.number, name: tagDraft.name }];
+      updated = [...viewTags, { number: tagDraft.number, name: tagDraft.name, sport }];
     }
     await setSiteContent(`photo.tags.${key}`, JSON.stringify(updated));
     setViewTags(updated);
 
     // Keep the global autocomplete index up to date
-    const newTag = { number: tagDraft.number, name: tagDraft.name };
-    const alreadyIndexed = allTags.some(t => t.number === newTag.number && t.name === newTag.name);
+    const newTag = { number: tagDraft.number, name: tagDraft.name, sport };
+    const alreadyIndexed = allTags.some(t => t.number === newTag.number && t.name === newTag.name && t.sport === newTag.sport);
     if (!alreadyIndexed) {
       const updatedAll = [...allTags, newTag];
       await setSiteContent("photo.tags.all", JSON.stringify(updatedAll));
@@ -262,6 +274,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
       all: lacrossePhotos.map(p => ({ url: p.cloudinaryUrl, cloudinaryId: p.cloudinaryId })),
       idx: i,
       prefix: LACROSSE_EVENT.name,
+      sport: "lacrosse",
     });
   }
 
@@ -271,6 +284,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
       all: event.photos.map((p, j) => ({ url: p.url, photoKey: `evt.${event.id}.${j}` })),
       idx: i,
       prefix: event.title,
+      sport: event.category,
     });
   }
 
@@ -331,12 +345,15 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-colors duration-300" />
                     {/* Tags centered over the image */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-3">
-                      {entry.tags.map((t, ti) => (
+                      {entry.tags.map((t, ti) => {
+                        const accent = tagAccent(t.sport);
+                        return (
                         <span key={ti} className="flex items-center gap-1.5 bg-black/70 backdrop-blur-sm border border-white/10 rounded-full px-3 py-1">
-                          {t.number && <span className="text-[#c8a96e] text-xs font-semibold">#{t.number}</span>}
+                          {t.number && <span className="text-xs font-semibold" style={{ color: accent }}>#{t.number}</span>}
                           {t.name && <span className="text-white text-xs">{t.name}</span>}
                         </span>
-                      ))}
+                        );
+                      })}
                     </div>
                     {/* Event label at bottom */}
                     <p className="absolute bottom-0 left-0 right-0 px-3 py-2 text-[9px] text-[#999] tracking-widest uppercase truncate bg-gradient-to-t from-black/80 to-transparent">
@@ -571,7 +588,9 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                 {/* Existing tags — clickable to edit in edit mode */}
                 {viewTags.length > 0 && (
                   <div className="flex flex-wrap gap-2 sm:gap-3 items-center justify-center">
-                    {viewTags.map((tag, ti) => (
+                    {viewTags.map((tag, ti) => {
+                      const accent = tagAccent(tag.sport);
+                      return (
                       <span
                         key={ti}
                         onClick={() => {
@@ -579,15 +598,19 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                           setEditingTagIdx(ti);
                           setTagDraft({ number: tag.number, name: tag.name });
                         }}
-                        className={`flex items-center gap-1.5 sm:gap-2 bg-[#1a1a1a] border rounded-full px-3 sm:px-4 py-1 sm:py-1.5 transition-colors ${
+                        className={`flex items-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 transition-colors border ${
                           canTag
                             ? editingTagIdx === ti
-                              ? "border-[#c8a96e] cursor-pointer"
-                              : "border-[#2a2a2a] hover:border-[#444] cursor-pointer"
-                            : "border-[#2a2a2a]"
+                              ? "cursor-pointer"
+                              : "hover:opacity-80 cursor-pointer"
+                            : ""
                         }`}
+                        style={{
+                          background: `${accent}12`,
+                          borderColor: editingTagIdx === ti ? accent : `${accent}35`,
+                        }}
                       >
-                        {tag.number && <span className="text-[#c8a96e] text-xs font-medium">#{tag.number}</span>}
+                        {tag.number && <span className="text-xs font-medium" style={{ color: accent }}>#{tag.number}</span>}
                         {tag.name && <span className="text-white text-xs sm:text-sm">{tag.name}</span>}
                         {canTag && (
                           <button
@@ -596,7 +619,8 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                           >✕</button>
                         )}
                       </span>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
@@ -634,16 +658,20 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                     {/* Autocomplete suggestions */}
                     {suggestions.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 justify-center">
-                        {suggestions.map((s, i) => (
+                        {suggestions.map((s, i) => {
+                          const accent = tagAccent(s.sport);
+                          return (
                           <button
                             key={i}
                             onClick={() => { setTagDraft({ number: s.number, name: s.name }); setSuggestions([]); }}
-                            className="flex items-center gap-1 bg-[#111] border border-[#2a2a2a] hover:border-[#c8a96e]/50 rounded-full px-2.5 py-1 transition-colors"
+                            className="flex items-center gap-1 bg-[#111] border rounded-full px-2.5 py-1 transition-colors hover:opacity-80"
+                            style={{ borderColor: `${accent}40` }}
                           >
-                            {s.number && <span className="text-[#c8a96e] text-[10px] font-medium">#{s.number}</span>}
+                            {s.number && <span className="text-[10px] font-medium" style={{ color: accent }}>#{s.number}</span>}
                             {s.name && <span className="text-white text-[10px]">{s.name}</span>}
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -719,12 +747,15 @@ export function LacrosseSearch({
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-colors" />
                     {/* Tags centered over image */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2">
-                      {entry.tags.map((t, i) => (
+                      {entry.tags.map((t, i) => {
+                        const accent = tagAccent(t.sport);
+                        return (
                         <span key={i} className="flex items-center gap-1 bg-black/70 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-0.5">
-                          {t.number && <span className="text-[#c8a96e] text-[10px] font-semibold">#{t.number}</span>}
+                          {t.number && <span className="text-[10px] font-semibold" style={{ color: accent }}>#{t.number}</span>}
                           {t.name && <span className="text-white text-[10px]">{t.name}</span>}
                         </span>
-                      ))}
+                        );
+                      })}
                     </div>
                   </button>
                 ))}
