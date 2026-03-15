@@ -35,7 +35,7 @@ export default async function HomePage() {
       />
       <FeaturedPhotos />
 
-      <footer className="border-t border-[#1a1a1a] mt-32 py-16 px-6 text-center">
+      <footer className="border-t border-[#1a1a1a] mt-16 sm:mt-32 py-10 sm:py-16 px-4 sm:px-6 text-center">
         <p className="text-[#666] text-sm tracking-wider">
           © {new Date().getFullYear()} Jacob Majors — Photographer
         </p>

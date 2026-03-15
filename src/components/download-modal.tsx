@@ -54,11 +54,11 @@ export function DownloadModal({ imageUrl, filename = "photo.jpg", onClose }: Pro
 
   return (
     <div
-      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-6"
+      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4 sm:p-6"
       onClick={onClose}
     >
       <div
-        className="bg-[#111] border border-[#222] rounded-2xl p-8 w-full max-w-md"
+        className="bg-[#111] border border-[#222] rounded-2xl p-5 sm:p-8 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-6">
@@ -66,7 +66,7 @@ export function DownloadModal({ imageUrl, filename = "photo.jpg", onClose }: Pro
             <p className="text-[#c8a96e] text-[10px] tracking-[0.4em] uppercase mb-1">Before you download</p>
             <h3 className="text-white text-lg font-light">Usage Agreement</h3>
           </div>
-          <button onClick={onClose} className="text-[#555] hover:text-white transition-colors mt-1">
+          <button onClick={onClose} className="text-[#555] hover:text-white transition-colors p-2 -mr-2 -mt-1">
             <X size={18} />
           </button>
         </div>

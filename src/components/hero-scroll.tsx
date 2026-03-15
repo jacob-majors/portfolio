@@ -257,7 +257,7 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
               {slide.sub}
             </p>
             <h1
-              className={`text-5xl md:text-7xl lg:text-[90px] font-light text-white leading-[0.95] tracking-tight max-w-4xl ${canEdit ? "cursor-pointer hover:opacity-80" : ""}`}
+              className={`text-4xl sm:text-5xl md:text-7xl lg:text-[90px] font-light text-white leading-[0.95] tracking-tight max-w-4xl ${canEdit ? "cursor-pointer hover:opacity-80" : ""}`}
               onClick={() => canEdit && setEditingIndex(i)}
             >
               {slide.headline}
@@ -280,12 +280,12 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5 pointer-events-none">
-          <span className="text-white/50 text-[9px] tracking-[0.35em] uppercase">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-[#c8a96e]/60 to-transparent" />
+          <span className="text-white/40 text-[9px] sm:text-[10px] tracking-[0.35em] uppercase">Scroll</span>
+          <div className="w-px h-8 sm:h-12 bg-gradient-to-b from-[#c8a96e]/50 to-transparent" />
         </div>
 
         {/* Progress dots */}
-        <div className="absolute right-7 top-1/2 -translate-y-1/2 flex flex-col gap-2.5">
+        <div className="absolute right-4 sm:right-6 lg:right-7 top-1/2 -translate-y-1/2 flex flex-col gap-2">
           {slides.map((_, i) => (
             <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/35" />
           ))}

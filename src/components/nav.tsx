@@ -44,7 +44,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
         scrolled ? "bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#1a1a1a]" : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
         <Link href="/" className="text-sm font-medium tracking-widest uppercase text-white hover:text-[#c8a96e] transition-colors">
           Jacob Majors
         </Link>
@@ -113,7 +113,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="md:hidden flex flex-col gap-1.5 p-3 -mr-1"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >

@@ -13,8 +13,8 @@ export function FeaturedPhotos() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section ref={ref} className="px-6 pb-32">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3">
+    <section ref={ref} className="px-4 sm:px-6 pb-24 sm:pb-32">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
         {FEATURED.map((event, i) => (
           <motion.div
             key={event.id}

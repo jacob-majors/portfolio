@@ -15,6 +15,18 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent content width from jumping when a scrollbar appears/disappears */
+  scrollbar-gutter: stable;
+}
+
+/* Respect user motion preferences — disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
 }
 
 body {

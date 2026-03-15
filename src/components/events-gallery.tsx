@@ -339,7 +339,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                       ))}
                     </div>
                     {/* Event label at bottom */}
-                    <p className="absolute bottom-0 left-0 right-0 px-3 py-2 text-[8px] sm:text-[9px] text-[#888] tracking-widest uppercase truncate bg-gradient-to-t from-black/80 to-transparent">
+                    <p className="absolute bottom-0 left-0 right-0 px-3 py-2 text-[9px] text-[#999] tracking-widest uppercase truncate bg-gradient-to-t from-black/80 to-transparent">
                       {entry.eventTitle}
                     </p>
                   </button>
@@ -391,7 +391,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                    <p className="text-[#c8a96e] text-[8px] sm:text-[9px] tracking-[0.3em] uppercase mb-0.5">{LACROSSE_EVENT.sport} · {LACROSSE_EVENT.date}</p>
+                    <p className="text-[#c8a96e] text-[9px] tracking-[0.3em] uppercase mb-0.5">{LACROSSE_EVENT.sport} · {LACROSSE_EVENT.date}</p>
                     <p className="text-white text-xs sm:text-sm font-medium leading-tight">{LACROSSE_EVENT.name}</p>
                     <p className="text-[#999] text-[9px] sm:text-[10px] tracking-widest uppercase mt-1">{lacrossePhotos.length} photos</p>
                   </div>
@@ -459,7 +459,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                   {/* Download: always visible on mobile, hover-only on desktop */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setDownloadTarget({ url: photo.cloudinaryUrl, filename: `${photo.title}.jpg` }); }}
-                    className="absolute top-2 right-2 sm:top-3 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-black/60 hover:bg-black/90 text-white rounded-full p-2"
+                    className="absolute top-2 right-2 sm:top-3 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-black/60 hover:bg-black/90 text-white rounded-full p-2.5"
                     title="Download"
                   >
                     <Download size={14} className="sm:hidden" />
@@ -497,7 +497,7 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
                   <div className="absolute inset-0 rounded-lg bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
                   <button
                     onClick={(e) => { e.stopPropagation(); setDownloadTarget({ url: photo.url, filename: `${openEvent.title}-${i + 1}.jpg` }); }}
-                    className="absolute top-2 right-2 sm:top-3 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-black/60 hover:bg-black/90 text-white rounded-full p-2"
+                    className="absolute top-2 right-2 sm:top-3 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-black/60 hover:bg-black/90 text-white rounded-full p-2.5"
                     title="Download"
                   >
                     <Download size={14} className="sm:hidden" />

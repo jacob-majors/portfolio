@@ -27,11 +27,11 @@ export default async function PhotographyPage() {
   } catch {}
 
   return (
-    <main className="pt-24">
-      <div className="px-6 max-w-7xl mx-auto py-16">
-        <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-4">Portfolio</p>
-        <h1 className="text-5xl md:text-7xl font-light text-white mb-4">Photography</h1>
-        <p className="text-[#666] text-lg max-w-md">Action-sports photography — races, courts, crags, and everything between.</p>
+    <main className="pt-20 sm:pt-24">
+      <div className="px-4 sm:px-6 max-w-7xl mx-auto py-10 sm:py-16">
+        <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-3 sm:mb-4">Portfolio</p>
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-light text-white mb-3 sm:mb-4">Photography</h1>
+        <p className="text-[#666] text-base sm:text-lg max-w-md">Action-sports photography — races, courts, crags, and everything between.</p>
       </div>
       <EventsGallery lacrossePhotos={lacrossePhotos} isAdmin={isAdmin} />
     </main>
