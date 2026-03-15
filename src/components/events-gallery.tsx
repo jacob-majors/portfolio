@@ -50,6 +50,65 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
     });
   }, []);
 
+  // One-time migration: rebuild search indexes from existing per-photo tag data.
+  // Runs when the admin loads the page — covers tags saved before the indexes existed.
+  useEffect(() => {
+    if (!isAdmin || lacrossePhotos.length === 0) return;
+
+    Promise.all([
+      getSiteContent("photo.tags.searchIndex"),
+      getSiteContent("photo.tags.all"),
+    ]).then(async ([indexVal, allVal]) => {
+      let index: SearchIndexEntry[] = [];
+      let all: Tag[] = [];
+      try { index = indexVal ? JSON.parse(indexVal) : []; } catch {}
+      try { all = allVal ? JSON.parse(allVal) : []; } catch {}
+      if (index.length > 0 && all.length > 0) return; // Already built — nothing to do
+
+      // Fetch all lacrosse photo tags in parallel
+      const tagEntries = await Promise.all(
+        lacrossePhotos.map(async (p) => {
+          const val = await getSiteContent(`photo.tags.${p.cloudinaryId}`);
+          let tags: Tag[] = [];
+          try { tags = val ? JSON.parse(val) : []; } catch {}
+          return { p, tags };
+        })
+      );
+
+      // Rebuild searchIndex
+      if (index.length === 0) {
+        const newIndex: SearchIndexEntry[] = tagEntries
+          .filter(e => e.tags.length > 0)
+          .map(e => ({
+            photoKey: e.p.cloudinaryId,
+            photoUrl: e.p.cloudinaryUrl,
+            eventTitle: LACROSSE_EVENT.name,
+            tags: e.tags,
+          }));
+        if (newIndex.length > 0) {
+          await setSiteContent("photo.tags.searchIndex", JSON.stringify(newIndex));
+          setSearchIndex(newIndex);
+        }
+      }
+
+      // Rebuild allTags (unique tag values for autocomplete)
+      if (all.length === 0) {
+        const seen = new Set<string>();
+        const unique: Tag[] = [];
+        for (const { tags } of tagEntries) {
+          for (const t of tags) {
+            const key = `${t.number}|${t.name}`;
+            if (!seen.has(key)) { seen.add(key); unique.push(t); }
+          }
+        }
+        if (unique.length > 0) {
+          await setSiteContent("photo.tags.all", JSON.stringify(unique));
+          setAllTags(unique);
+        }
+      }
+    });
+  }, [isAdmin, lacrossePhotos]);
+
   const showLacrosse = activeCategory === "All" || activeCategory === "lacrosse";
   const filteredEvents =
     activeCategory === "lacrosse" ? [] :
