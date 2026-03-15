@@ -110,11 +110,14 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
     const total = slides.length;
 
     const ctx = gsap.context(() => {
-      // Init opacities
-      slidesRef.current.forEach((el, i) => { if (el) gsap.set(el, { opacity: i === 0 ? 1 : 0 }); });
-      textsRef.current.forEach((el, i) => { if (el) gsap.set(el, { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 40 }); });
+      // Init — force GPU layer on each element to prevent paint jank
+      slidesRef.current.forEach((el, i) => {
+        if (el) gsap.set(el, { opacity: i === 0 ? 1 : 0, force3D: true });
+      });
+      textsRef.current.forEach((el, i) => {
+        if (el) gsap.set(el, { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 40, force3D: true });
+      });
 
-      // Main scroll animation
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top top",
@@ -122,16 +125,22 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
         onUpdate: (self) => {
           const p = self.progress;
 
-          // Fade the entire fixed hero out in the last 25% of scroll
-          // so it fully disappears before the sticky un-stick point
+          // Fade the hero layer out in the last portion of scroll.
+          // Once opacity reaches 0 we also disable pointer-events so the
+          // invisible layer doesn't block clicks on content below.
+          // There is no second ScrollTrigger — this single handler owns the
+          // full lifecycle, eliminating the onLeaveBack flash.
           const heroFadeStart = 0.68;
           const heroFadeEnd = 0.85;
-          let heroOpacity = 1;
-          if (p > heroFadeStart) {
-            heroOpacity = Math.max(0, 1 - (p - heroFadeStart) / (heroFadeEnd - heroFadeStart));
-          }
+          const heroOpacity = p > heroFadeStart
+            ? Math.max(0, 1 - (p - heroFadeStart) / (heroFadeEnd - heroFadeStart))
+            : 1;
+
           if (fixedRef.current) {
-            gsap.set(fixedRef.current, { opacity: heroOpacity });
+            gsap.set(fixedRef.current, {
+              opacity: heroOpacity,
+              pointerEvents: heroOpacity <= 0 ? "none" : "auto",
+            });
           }
 
           // Per-slide animations
@@ -188,14 +197,11 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
         },
       });
 
-      // Hide fixed layer entirely once the scroll container has passed the viewport
-      // so it doesn't cover content on the page below
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "bottom top",
-        onEnter: () => { if (fixedRef.current) gsap.set(fixedRef.current, { display: "none" }); },
-        onLeaveBack: () => { if (fixedRef.current) gsap.set(fixedRef.current, { display: "block", opacity: 1 }); },
-      });
+      // Refresh scroll positions when mobile viewport height changes
+      // (e.g. iOS address bar appearing / disappearing)
+      const onResize = () => ScrollTrigger.refresh();
+      window.addEventListener("resize", onResize, { passive: true });
+      return () => window.removeEventListener("resize", onResize);
     }, containerRef);
 
     return () => ctx.revert();
@@ -213,7 +219,7 @@ export function HeroScroll({ dbSlides, isAdmin }: { dbSlides?: SlideData[]; isAd
       <div
         ref={fixedRef}
         className="fixed top-0 left-0 w-full overflow-hidden"
-        style={{ zIndex: 10, height: "100dvh" }}
+        style={{ zIndex: 10, height: "100dvh", willChange: "opacity" }}
       >
         {/* Image layers */}
         {slides.map((slide, i) => (

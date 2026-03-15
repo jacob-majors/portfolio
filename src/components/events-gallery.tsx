@@ -224,6 +224,14 @@ export function EventsGallery({ lacrossePhotos = [], isAdmin = false }: { lacros
     setViewPhoto({ ...viewPhoto, entry: viewPhoto.all[idx], idx });
   }, [viewPhoto]);
 
+  // Lock body scroll whenever any overlay is open (critical on iOS — prevents
+  // the background page from scrolling behind a fixed overlay)
+  useEffect(() => {
+    const anyOpen = openLacrosse || !!openEvent || !!viewPhoto;
+    document.body.style.overflow = anyOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [openLacrosse, openEvent, viewPhoto]);
+
   // Keyboard nav
   useEffect(() => {
     if (!viewPhoto) return;
