@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEditMode } from "@/hooks/use-edit-mode";
 import { setSiteContent } from "@/app/actions/site-content";
+import { removeBackground } from "@imgly/background-removal";
 
 type GearItem = {
   itemKey: string;
@@ -241,8 +242,11 @@ function GearCard({
       setUploading(true);
       setDragging(false);
       try {
+        // Remove background (open-source, runs in browser via WASM)
+        const blob = await removeBackground(file);
+
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", blob, `${item.itemKey}.png`);
         formData.append("upload_preset", "portfolio");
         const res = await fetch("https://api.cloudinary.com/v1_1/dh9kjvs42/image/upload", {
           method: "POST",
@@ -314,7 +318,7 @@ function GearCard({
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             {uploading ? (
-              <span className="text-[#444] text-[10px] tracking-[0.4em] uppercase animate-pulse">Uploading…</span>
+              <span className="text-[#444] text-[10px] tracking-[0.4em] uppercase animate-pulse">Processing…</span>
             ) : editMode ? (
               <>
                 <span className="text-[#333] text-2xl select-none">↑</span>

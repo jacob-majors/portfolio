@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { getSiteContent } from "@/app/actions/site-content";
-import { AboutContent } from "@/components/about-content";
+import { AboutContent as _AboutContent } from "@/components/about-content"; // TEMP: restore by replacing SocialLinks-only view
 import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
@@ -33,7 +33,8 @@ export default async function AboutPage() {
     getSiteContent("about.instagram_media"),
   ]);
 
-  const data = Object.fromEntries(
+  // TEMP: data unused while showing socials-only; restore with <AboutContent data={data} isAdmin={isAdmin} />
+  const _data = Object.fromEntries(
     keys.map((k, i) => [k, values[i] ?? DEFAULTS[k]])
   ) as typeof DEFAULTS;
 
@@ -42,25 +43,15 @@ export default async function AboutPage() {
 
   return (
     <main className="pt-24 min-h-screen flex flex-col">
-      <div className="max-w-3xl mx-auto px-6 py-20 flex-1 w-full">
-        <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase mb-6">About</p>
+      <div className="max-w-3xl mx-auto px-6 py-20 flex-1 w-full flex flex-col items-center justify-center gap-10">
+        <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase">Jacob Majors</p>
 
-        {/* Social icons — top */}
+        {/* TEMP: showing socials only — restore <AboutContent> to bring back full bio */}
         <SocialLinks
           instagramPersonal={instagramPersonal}
           instagramMedia={instagramMedia}
           isAdmin={isAdmin}
           position="top"
-        />
-
-        <AboutContent data={data} isAdmin={isAdmin} />
-
-        {/* Social links — bottom */}
-        <SocialLinks
-          instagramPersonal={instagramPersonal}
-          instagramMedia={instagramMedia}
-          isAdmin={isAdmin}
-          position="bottom"
         />
       </div>
 

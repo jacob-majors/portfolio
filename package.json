@@ -13,6 +13,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
     "@gsap/react": "^2.1.2",
+    "@imgly/background-removal": "^1.7.0",
     "@libsql/client": "^0.17.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/bcryptjs": "^2.4.6",

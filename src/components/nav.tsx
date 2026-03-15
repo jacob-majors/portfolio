@@ -9,8 +9,8 @@ import { publishToGitHub } from "@/app/actions/publish";
 
 const links = [
   { href: "/photography", label: "Photography" },
-  { href: "/projects", label: "Engineering" },
-  { href: "/blog", label: "Writing" },
+  { href: "/projects", label: "Engineering", hidden: true }, // TEMP hidden
+  { href: "/blog", label: "Writing", hidden: true }, // TEMP hidden
   { href: "/about", label: "About" },
 ];
 
@@ -51,7 +51,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-10">
-          {links.map((link) => (
+          {links.filter(l => !l.hidden).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -129,7 +129,7 @@ export function Nav({ isAdmin }: { isAdmin?: boolean }) {
         menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
       )}>
         <div className="px-6 pb-6 flex flex-col gap-6 border-b border-[#1a1a1a]">
-          {links.map((link) => (
+          {links.filter(l => !l.hidden).map((link) => (
             <Link
               key={link.href}
               href={link.href}
