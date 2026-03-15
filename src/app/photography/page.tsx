@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { db } from "@/db";
 import { photos } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Photography",
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PhotographyPage() {
+  const session = await auth();
+  const isAdmin = !!session?.user;
+
   let lacrossePhotos: { id: number; cloudinaryUrl: string; title: string; cloudinaryId: string }[] = [];
 
   try {
@@ -29,7 +33,7 @@ export default async function PhotographyPage() {
         <h1 className="text-5xl md:text-7xl font-light text-white mb-4">Photography</h1>
         <p className="text-[#666] text-lg max-w-md">Action-sports photography — races, courts, crags, and everything between.</p>
       </div>
-      <EventsGallery lacrossePhotos={lacrossePhotos} />
+      <EventsGallery lacrossePhotos={lacrossePhotos} isAdmin={isAdmin} />
     </main>
   );
 }

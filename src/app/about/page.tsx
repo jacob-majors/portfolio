@@ -6,7 +6,7 @@ import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "About Jacob Majors — photographer, engineer, and maker.",
+  description: "Jacob Majors — 16-year-old action sports photographer at Sonoma Academy, Sonoma County CA.",
 };
 
 const DEFAULTS = {
@@ -43,8 +43,12 @@ export default async function AboutPage() {
 
   return (
     <main className="pt-24 min-h-screen flex flex-col">
-      <div className="max-w-3xl mx-auto px-6 py-20 flex-1 w-full flex flex-col items-center justify-center gap-10">
+      <div className="max-w-3xl mx-auto px-6 py-20 flex-1 w-full flex flex-col items-center justify-center gap-6 text-center">
         <p className="text-[#c8a96e] text-xs tracking-[0.4em] uppercase">Jacob Majors</p>
+        <p className="text-[#888] text-sm leading-relaxed max-w-sm">
+          16-year-old photographer based in Sonoma County, California. Currently attending Sonoma Academy.
+          I shoot action sports — lacrosse, mountain bike races, basketball, soccer, and climbing.
+        </p>
 
         {/* TEMP: showing socials only — restore <AboutContent> to bring back full bio */}
         <SocialLinks
