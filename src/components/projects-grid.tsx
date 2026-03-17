@@ -12,6 +12,7 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
   const [openId, setOpenId] = useState<number | null>(null);
+  const [hoverId, setHoverId] = useState<number | null>(null);
 
   return (
     <div ref={ref} className="px-4 sm:px-6 pb-32 max-w-3xl mx-auto">
@@ -19,6 +20,7 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
         {projects.map((project, i) => {
           const tags = JSON.parse(project.tags) as string[];
           const isOpen = openId === project.id;
+          const isHovered = hoverId === project.id;
 
           return (
             <motion.div
@@ -26,18 +28,47 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="relative"
             >
+              {/* Accent bar */}
+              <motion.div
+                className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#c8a96e] origin-center"
+                initial={{ scaleY: 0, opacity: 0 }}
+                animate={{ scaleY: isHovered || isOpen ? 1 : 0, opacity: isHovered || isOpen ? 1 : 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              />
+
+              {/* Row background wash */}
+              <motion.div
+                className="absolute inset-0 bg-[#c8a96e] pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered || isOpen ? 0.04 : 0 }}
+                transition={{ duration: 0.2 }}
+              />
+
               <button
                 onClick={() => setOpenId(isOpen ? null : project.id)}
-                className="w-full flex items-center justify-between py-5 sm:py-6 text-left group"
+                onMouseEnter={() => setHoverId(project.id)}
+                onMouseLeave={() => setHoverId(null)}
+                className="relative w-full flex items-center justify-between py-5 sm:py-6 text-left"
               >
-                <span className="text-white text-lg sm:text-xl font-light group-hover:text-[#c8a96e] transition-colors duration-300">
+                <motion.span
+                  className="text-lg sm:text-xl font-light"
+                  animate={{
+                    x: isHovered || isOpen ? 6 : 0,
+                    color: isHovered || isOpen ? "#c8a96e" : "#ffffff",
+                  }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
                   {project.title}
-                </span>
-                <ChevronDown
-                  size={18}
-                  className={`text-[#555] group-hover:text-[#c8a96e] transition-all duration-300 shrink-0 ml-4 ${isOpen ? "rotate-180 text-[#c8a96e]" : ""}`}
-                />
+                </motion.span>
+                <motion.div
+                  animate={{ rotate: isOpen ? 180 : 0, color: isHovered || isOpen ? "#c8a96e" : "#555555" }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="shrink-0 ml-4"
+                >
+                  <ChevronDown size={18} />
+                </motion.div>
               </button>
 
               <AnimatePresence initial={false}>
